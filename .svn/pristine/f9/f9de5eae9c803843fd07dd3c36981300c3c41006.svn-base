@@ -1,0 +1,17 @@
+﻿namespace Perenis.Core.General
+{
+    /// <summary>
+    /// Represents abstract factory object. It creates new instances of <see cref="TResult"/> based on request of type <see cref="TRequest"/>.
+    /// </summary>
+    /// <typeparam name="TRequest"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    public interface IFactory<out TResult, in TRequest>
+    {
+        /// <summary>
+        /// Creates new instance of <see cref="TResult"/> type based on request in <see cref="TRequest"/>.
+        /// </summary>
+        /// <param name="request">Request for the creation.</param>
+        /// <returns>New instance of <see cref="TResult"/>.</returns>
+        TResult Create(TRequest request);
+    }
+}

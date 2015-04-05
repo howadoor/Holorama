@@ -1,0 +1,268 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using Holorama.Logic.Abstract;
+using Holorama.Logic.Tools;
+using Holorama.Logic.Tools.Voronoi;
+
+namespace Holorama.Logic.Concrete.Generators
+{
+    /// <summary>
+    /// Basic experimental implementation of IGenerator
+    /// </summary>
+    public class BasicExperimentalGenerator : GeneratorBase
+    {
+        public Bitmap GenerateBitmapInCells(Size bitmapSize, RectangleF area, IGeneratorOptions options)
+        {
+            var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
+            GenerateBitmapInCells(bitmap, bitmapSize, area);
+            return bitmap;
+        }
+
+        private void GenerateBitmapInCells(Bitmap bitmap, Size bitmapSize, RectangleF area)
+        {
+            for (var x = 0; x < bitmapSize.Width; x++)
+            {
+                var areaX = area.Left + area.Width*x/bitmapSize.Width;
+                for (var y = 0; y < bitmapSize.Height; y++)
+                {
+                    var areaY = area.Top + area.Height*y/bitmapSize.Height;
+                    var nearest = GetNearest(areaX, areaY);
+                    var q = (int) ((Math.Sin(nearest.X*234578 + nearest.Y*2134.1245) + 1)*2);
+                    switch (q)
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            {
+                                var fX = Math.Sin(nearest.X*2145.3 + nearest.Y*3547.87)*Math.Sin(areaX);
+                                var fY = Math.Sin(nearest.X*12145.3 + nearest.Y*83547.87)*Math.Sin(areaY);
+                                var redF = Math.Sin(areaX*fX)*Math.Sin(areaX*fY);
+                                redF = Math.Pow(Math.Abs(redF), 5);
+                                redF = (int) ((1.0 - redF)*255);
+                                var greenF = redF;
+                                var blueF = redF;
+                                var red = (int) redF;
+                                var alpha = red;
+                                var green = (int) greenF; // (int)(value * frequencyY * 255);
+                                var blue = (int) blueF; // (int)(value * frequencyX * 255);
+                                bitmap.SetPixel(x, y, Color.FromArgb(alpha < 0 ? 0 : alpha, red < 0 ? 0 : red, green < 0 ? 0 : green, blue < 0 ? 0 : blue));
+                            }
+                            break;
+                        case 2:
+                            SomeFrequencyRaster(x, y, bitmap, areaX, areaY);
+                            break;
+                        case 3:
+                            {
+                                var fX = Math.Sin(nearest.X*2145.3 + nearest.Y*3547.87 + areaX);
+                                var fY = Math.Sin(nearest.X*12145.3 + nearest.Y*83547.87 + areaY);
+                                var tx = (areaX + fX*3 + fY*3)*5;
+                                var qx = Math.Pow(tx - Math.Floor(tx), 17);
+                                var redF = (int) ((1.0 - qx)*255);
+                                var greenF = redF;
+                                var blueF = redF;
+                                var red = (int) redF;
+                                var alpha = red;
+                                var green = (int) greenF; // (int)(value * frequencyY * 255);
+                                var blue = (int) blueF; // (int)(value * frequencyX * 255);
+                                bitmap.SetPixel(x, y, Color.FromArgb(alpha < 0 ? 0 : alpha, red < 0 ? 0 : red, green < 0 ? 0 : green, blue < 0 ? 0 : blue));
+                            }
+                            break;
+                        default:
+                            break;
+                            {
+                                var redF = (Math.Sin(nearest.X*234578 + nearest.Y*2134.1245) + 1)*128;
+                                var greenF = (Math.Sin(nearest.X*114578 + nearest.Y*5134.1245) + 1)*128;
+                                var blueF = (Math.Sin(nearest.X*217578 + nearest.Y*7134.1245) + 1)*128;
+                                var red = (int) redF;
+                                var green = (int) greenF; // (int)(value * frequencyY * 255);
+                                var blue = (int) blueF; // (int)(value * frequencyX * 255);
+                                bitmap.SetPixel(x, y, Color.FromArgb(red < 0 ? 0 : red, green < 0 ? 0 : green, blue < 0 ? 0 : blue));
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        private PointF GetNearest(double dX, double dY)
+        {
+            var iX = (int)Math.Floor(dX + 0.5);
+            var iY = (int)Math.Floor(dY + 0.5);
+            var nearestDistance = 1000.0;
+            var nearestPoint = new PointF(0, 0);
+            for (int x = iX - 2; x <= iX + 2; x++)
+            {
+                for (int y = iY - 2; y <= iY + 2; y++)
+                {
+                    var shifted = GetShifted(x, y);
+                    var distX = dX - shifted.X;
+                    var distY = dY - shifted.Y;
+                    var distance = distX*distX + distY*distY;
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestPoint = shifted;
+                    }
+                }
+            }
+            return nearestPoint;
+        }
+
+        private PointF GetNearestButThis(double dX, double dY)
+        {
+            var iX = (int)Math.Floor(dX + 0.5);
+            var iY = (int)Math.Floor(dY + 0.5);
+            var nearestDistance = 1000.0;
+            var nearestPoint = new PointF(0, 0);
+            for (int x = iX - 2; x <= iX + 2; x++)
+            {
+                for (int y = iY - 2; y <= iY + 2; y++)
+                {
+                    var shifted = GetShifted(x, y);
+                    var distX = dX - shifted.X;
+                    var distY = dY - shifted.Y;
+                    var distance = distX * distX + distY * distY;
+                    if (distance > 0 && distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestPoint = shifted;
+                    }
+                }
+            }
+            return nearestPoint;
+        }
+
+        private PointF GetShifted(int x, int y)
+        {
+            var shiftedX = x + Math.Sin(x*5124.12323 + y *64215.14785);
+            var shiftedY = y + Math.Sin(x*3124.12323 + y *32124.11511);
+            return new PointF((float) shiftedX, (float) shiftedY);
+        }
+
+        private static void SomeFrequencyRaster(int x, int y, Bitmap bitmap, float areaX, float areaY)
+        {
+            var frequencyX1 = Math.Sin(areaX/41.1 + areaY/49.93);
+            var frequencyY1 = Math.Sin(areaX/38.91 + areaY/47.77);
+            var frequencyX = Math.Sin(areaX*frequencyY1/102 + areaY*frequencyX1/103);
+            var frequencyY = Math.Sin(areaX*frequencyX1/101 + areaY*frequencyY1/104);
+            var drivingValue = Math.Sin(areaX*frequencyX*frequencyX1)*Math.Sin(areaY*frequencyY*frequencyY1);
+            var value = drivingValue; // Math.Pow((drivingValue + 1) / 2, (frequencyX * frequencyY) > 0 ? 32 : 11);
+            var red = (int) (value*255);
+            var green = red; // (int)(value * frequencyY * 255);
+            var blue = red; // (int)(value * frequencyX * 255);
+            bitmap.SetPixel(x, y, Color.FromArgb(red < 0 ? 0 : red, green < 0 ? 0 : green, blue < 0 ? 0 : blue));
+            return;
+            if (value < 0.5)
+            {
+                var pixelR = (Math.Sin(areaX)*Math.Cos(areaY) + 1)/2;
+                var pixelG = (Math.Sin(areaX/7.16)*Math.Cos(areaY/3.14) + 1)/2;
+                var pixelB = (Math.Sin(areaX/1.3)*Math.Cos(areaY/5.6) + 1)/2;
+                if (pixelR > 0)
+                {
+                    bitmap.SetPixel(x, y, Color.FromArgb((int) (pixelR*255), (int) (pixelG*255), (int) (pixelB*255)));
+                }
+            }
+            else
+            {
+                var pixelR = (Math.Sin(areaX/6.0 + 2.0)*Math.Cos(areaY) + 1)/2;
+                var pixelG = (Math.Sin(areaX/0.16)*Math.Cos(areaY/1.14) + 1)/2;
+                var pixelB = (Math.Sin(areaX/1.335)*Math.Cos(areaY/0.6312) + 1)/2;
+                if (pixelG > 0)
+                {
+                    bitmap.SetPixel(x, y, Color.FromArgb((int) (pixelR*255), (int) (pixelG*255), (int) (pixelB*255)));
+                }
+            }
+        }
+
+        public override void GenerateBitmap(RectangleF area, Graphics graphics, IGeneratorOptions options)
+        {
+            var points = GetVoronoiPoints(area).ToArray();
+            var graph = Fortune.ComputeVoronoiGraph(points);
+            var pen = new Pen(Color.Beige, 0.2f);
+            var lightPen = new Pen(Color.Gray, 0.01f);
+            var leftPen = new Pen(Color.Gray, 0.01f);
+            var rightPen = new Pen(Color.Gray, 0.01f);
+            foreach (var edge in graph.Edges.Cast<VoronoiEdge>())
+            {
+                //graphics.DrawLine(pen, edge.VVertexA.ToPointF(), edge.VVertexB.ToPointF());
+            }
+            /*
+            foreach (var edge in graph.Edges.Cast<VoronoiEdge>())
+            {
+                graphics.DrawLine(lightPen, edge.VVertexA.ToPointF(), edge.VVertexB.ToPointF());
+            }
+            foreach (var edge in graph.Edges.Cast<VoronoiEdge>())
+            {
+                var midPoint = edge.VVertexA.ToPointF().GetMidPoint(edge.VVertexB.ToPointF());
+                graphics.DrawLine(leftPen, midPoint, edge.LeftData.ToPointF());
+                graphics.DrawLine(rightPen, midPoint, edge.RightData.ToPointF());
+            }*/
+            foreach (var point in points)
+            {
+                // graphics.DrawCircle(new PointF((float) point[0], (float) point[1]), 0.05f, null, Brushes.Gray);
+            }
+            Color[] colors = new Color[] { Color.Red, Color.Blue, Color.Transparent };
+            foreach (var cell in graph.GetCells())
+            {
+                var pen3 = new Pen(colors[random.Next(colors.Count())], 0.02f);
+                var cellPoints = cell.ToArray();
+                if (cellPoints.Count() < 3) continue;
+                // graphics.DrawClosedCurve(pen3, cellPoints);
+                //graphics.FillPolygon(new SolidBrush(Color.FromArgb(4, colors[random.Next(colors.Count())])), cellPoints);
+            }
+
+            if (random.Next(5) == 0)
+            {
+                GenerateGraphOfNearest(area, graphics, random.Next(1024));
+            }
+            switch (random.Next(1))
+            {
+                case 0:
+                    new ModulatedOrbitalsGenerator().GenerateModulatedOrbitals(area, graphics);
+                    break;
+
+                case 1:
+                    new SignsGenerator().GenerateBitmap(area, graphics, null);
+                    break;
+            }
+            //var starPoints = DrawingTools.GetStarPoints(5, area.GetCenter(), area.Width/2, area.Height/4).ToArray();
+            //new HandDrawer().DrawLines(graphics, pen, starPoints);
+        }
+
+        private IEnumerable<Vector> GetVoronoiPoints(RectangleF area)
+        {
+            return GeneratorTools.GetRandomPoints(area, 512, 1.63f).Select(point => new Vector(point.X, point.Y));
+        }
+        
+        Random random = new Random();
+
+        private void GenerateGraphOfNearest(RectangleF area, Graphics graphics, int count = 768)
+        {
+            var originalTransform = graphics.Transform;
+            var newTransform = originalTransform.Clone();
+            newTransform.RotateAt((float)(random.NextDouble() * 90), area.GetCenter());
+            graphics.Transform = newTransform;
+            var gridPen = new Pen(Color.FromArgb(240, 240, 240), (float)0.01);
+            var nearestPen = new Pen(Color.LightGray, (float)0.02);
+            var specialPen = new Pen(Color.Gray, (float)0.02);
+            foreach (var current in GeneratorTools.GetRandomPoints(area, count))
+            {
+                var nearest = GetNearest(current.X, current.Y);
+                //graphics.DrawLine(gridPen, new PointF((float) x, (float) y), shifted);
+                graphics.DrawLine(nearestPen, current, nearest);
+                var q = 0.05f;
+                graphics.FillEllipse(Brushes.LightGray, (float) (current.X - q/2), (float) (current.Y - q/2), q, q);
+                q = 0.1f;
+                graphics.FillEllipse(Brushes.White, (float)(nearest.X - q / 2), (float)(nearest.Y - q / 2), q, q);
+                graphics.DrawEllipse(nearestPen, (float)(nearest.X - q / 2), (float)(nearest.Y - q / 2), q, q);
+                /*
+                var nearest2 = GetNearestButThis(nearest.X, nearest.Y);
+                graphics.DrawLine(specialPen, nearest, nearest2);
+                 */
+            }
+            graphics.Transform = originalTransform;
+        }
+    }
+}

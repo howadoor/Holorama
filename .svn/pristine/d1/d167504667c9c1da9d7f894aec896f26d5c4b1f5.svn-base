@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CF372897-7D63-4E42-ACBC-F955A2C6804D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Holorama.Logic</RootNamespace>
+    <AssemblyName>Holorama.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstract\GeneratorBase.cs" />
+    <Compile Include="Abstract\GeneratorOptions.cs" />
+    <Compile Include="Abstract\IGenerator.cs" />
+    <Compile Include="Abstract\IGeneratorOptions.cs" />
+    <Compile Include="Concrete\Generators\BasicExperimentalGenerator.cs" />
+    <Compile Include="Concrete\Generators\ModulatedOrbitalsGenerator.cs" />
+    <Compile Include="Concrete\Generators\SignsGenerator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\Clipper\clipper.cs" />
+    <Compile Include="Tools\DrawingTools.cs" />
+    <Compile Include="Tools\GeneratorTools.cs" />
+    <Compile Include="Tools\GeoLibTools.cs" />
+    <Compile Include="Tools\GeometryTools.cs" />
+    <Compile Include="Tools\HandDrawer.cs" />
+    <Compile Include="Tools\Voronoi\FortuneVoronoi.cs" />
+    <Compile Include="Tools\Voronoi\HashSet.cs" />
+    <Compile Include="Tools\Voronoi\PriorityQueue.cs" />
+    <Compile Include="Tools\Voronoi\ToolBox.cs" />
+    <Compile Include="Tools\Voronoi\Vector.cs" />
+    <Compile Include="Tools\Voronoi\VoronoiTools.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeoLib 4.0\GeoLib.csproj">
+      <Project>{263192A1-5B8D-4F2B-96AD-0FBA86C9F4F5}</Project>
+      <Name>GeoLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeoPolygons 4.0\GeoPolygons.csproj">
+      <Project>{A13AA7E0-06C4-4401-9006-C7EB506B3479}</Project>
+      <Name>GeoPolygons</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

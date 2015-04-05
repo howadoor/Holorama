@@ -1,0 +1,98 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Holorama.Logic.Abstract;
+using Holorama.Logic.Abstract.General;
+
+namespace Holorama.Logic.Concrete.Space_Divisors
+{
+    public class TriangleTilesDivisor : IFactory<ISpaceDivision, RectangleF, SpaceDivisionOptions>
+    {
+        public ISpaceDivision Create(RectangleF spaceDefinition, SpaceDivisionOptions options)
+        {
+            return new TriangleTilesDivision(spaceDefinition, 5, 5);
+        }
+    }
+
+    public class TriangleTilesDivision : ISpaceDivision
+    {
+        private SizeF tileSize;
+        private int countY;
+        private int countX;
+        private PointF startPoint;
+
+        public TriangleTilesDivision(RectangleF spaceDefinition, int countW, int countH)
+        {
+            SetDivision(spaceDefinition, countW, countH);
+        }
+
+        /// <summary>
+        /// Sets members of this instance of<see cref="SquareTilesDivision"/> according to method parameters.
+        /// </summary>
+        /// <param name="rect">Rectangular space area which should be divided into square tiles.</param>
+        /// <param name="countW">Desired count of tiles in x-axis direction.</param>
+        /// <param name="countH">Desired count of tiles in y-axis direction.</param>
+        private void SetDivision(RectangleF rect, int countW, int countH)
+        {
+            var sin60 = Math.Sin(60*Math.PI/180.0);
+            var tileSizeX = Math.Min(rect.Width / countW, rect.Height / sin60 / countH);
+            tileSize = new SizeF((float) tileSizeX, (float) (tileSizeX*sin60));
+            countX = (int)Math.Ceiling(rect.Width / tileSize.Width) * 2;
+            countY = (int)Math.Ceiling(rect.Height / tileSize.Height);
+            startPoint = new PointF(rect.Left - (tileSize.Width * (int) (countX / 2) - rect.Width) / 2.0f, rect.Top - (tileSize.Height * countY - rect.Height) / 2.0f);
+        }
+
+        public IEnumerable<IEnumerable<PointF>> Cells
+        {
+            get
+            {
+                for (int iy = 0; iy < countY; iy++)
+                {
+                    for (int ix = 0; ix <= countX; ix++)
+                    {
+                        yield return GetTriangle(ix, iy);
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<PointF> GetTriangle(int ix, int iy)
+        {
+            var x = startPoint.X + (int) (ix / 2) * tileSize.Width;
+            var y = startPoint.Y + iy*tileSize.Height;
+            if (iy%2 == 0)
+            {
+                if (ix%2 == 0)
+                {
+                    yield return new PointF(x, y);
+                    yield return new PointF(x + tileSize.Width/2, y + tileSize.Height);
+                    yield return new PointF(x - tileSize.Width/2, y + tileSize.Height);
+                }
+                else
+                {
+                    yield return new PointF(x, y);
+                    yield return new PointF(x + tileSize.Width, y);
+                    yield return new PointF(x + tileSize.Width/2, y + tileSize.Height);
+                }
+            }
+            else
+            {
+                if (ix % 2 == 0)
+                {
+                    yield return new PointF(x - tileSize.Width / 2, y);
+                    yield return new PointF(x + tileSize.Width / 2, y);
+                    yield return new PointF(x, y + tileSize.Height);
+                }
+                else
+                {
+                    yield return new PointF(x + tileSize.Width / 2, y);
+                    yield return new PointF(x + tileSize.Width, y + tileSize.Height);
+                    yield return new PointF(x, y + tileSize.Height);
+                }
+            }
+        }
+    }
+}

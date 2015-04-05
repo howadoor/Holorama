@@ -1,0 +1,84 @@
+﻿using System;
+using System.Drawing;
+using Holorama.Logic.Image_Synthesis.Abstract;
+using Holorama.Logic.Tools;
+
+namespace Holorama.Logic.Image_Synthesis
+{
+    /// <summary>
+    /// Represents circle as instance of <see cref="ISynthesisItem"/>
+    /// </summary>
+    public class CircularItem : ISynthesisItem
+    {
+        /// <summary>
+        /// Center of the circle
+        /// </summary>
+        public PointF Center { get; set; }
+
+        /// <summary>
+        /// Radius of the circle
+        /// </summary>
+        public float Radius { get; set; }
+
+        /// <summary>
+        /// Color of the circle
+        /// </summary>
+        public Color Color { get; set; }
+
+        public void Render(Graphics graphics)
+        {
+            graphics.DrawCircle(Center, Radius, null, new SolidBrush(Color));
+        }
+
+        public ISynthesisItem CreateMutated(RectangleF area)
+        {
+            var mutated = new CircularItem { Color = this.Color, Radius = Radius };
+            for (var changesCounter = 0; changesCounter < 1; )
+            {
+                if (ColorEx.Random.Next(8) == 0)
+                {
+                    var newColor = ColorEx.GetRandomArgb();
+                    mutated.Color = ColorEx.Average(mutated.Color, newColor);
+                    changesCounter++;
+                    continue;
+                }
+                if (ColorEx.Random.Next(8) == 0)
+                {
+                    mutated.Color = ColorEx.GetRandomArgb();
+                    changesCounter++;
+                    continue;
+                }
+                if (ColorEx.Random.Next(4) == 0)
+                {
+                    mutated.Radius = Radius + Math.Max(area.Width, area.Height) * (float) (ColorEx.Random.NextDouble() - 0.5);
+                    changesCounter++;
+                    continue;
+                }
+                if (ColorEx.Random.Next(4) == 0)
+                {
+                    var dx = (float)((ColorEx.Random.NextDouble() - 0.5) * area.Width / 10);
+                    var dy = (float)((ColorEx.Random.NextDouble() - 0.5) * area.Height / 10);
+                    mutated.Center = new PointF(mutated.Center.X + dx * (float)ColorEx.Random.NextDouble() - 0.5f, mutated.Center.Y + dy * (float)ColorEx.Random.NextDouble() - 0.5f);
+                    changesCounter++;
+                    continue;
+                }
+                if (ColorEx.Random.Next(4) == 0)
+                {
+                    var newPoint = new PointF(Center.X + (float)((ColorEx.Random.NextDouble() - 0.5) * area.Width / 10),
+                        Center.Y + (float)((ColorEx.Random.NextDouble() - 0.5) * area.Height / 10));
+                    mutated.Center = newPoint;
+                    changesCounter++;
+                    continue;
+                }
+                if (mutated.Color.A == 0)
+                {
+                    mutated.Color = ColorEx.GetRandomArgb();
+                    changesCounter++;
+                    continue;
+                }
+            }
+            return mutated;
+
+        }
+    }
+}

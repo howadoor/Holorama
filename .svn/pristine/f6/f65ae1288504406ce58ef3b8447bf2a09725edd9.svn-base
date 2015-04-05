@@ -1,0 +1,25 @@
+﻿<Window x:Class="Holorama.Application.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="444" Width="676">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="126" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Image Grid.Column="1" HorizontalAlignment="Stretch" Name="mainImage" Stretch="Uniform" VerticalAlignment="Stretch" />
+        <StackPanel Margin="8">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}">
+                <Setter Property="Margin" Value="0,0,0,8"/>
+            </Style>
+            </StackPanel.Resources>
+            <Button Content="Refresh" Height="23" HorizontalAlignment="Left" Name="refreshButton" VerticalAlignment="Top" Width="75" Click="refreshButton_Click" />
+            <Button Content="Synthesis" Height="23" HorizontalAlignment="Left" Name="synthesisButton" VerticalAlignment="Top" Width="75" Click="synthesisButton_Click"  />
+            <TextBlock x:Name="roundTextBlock"></TextBlock>
+            <TextBlock x:Name="improvementsTextBlock"></TextBlock>
+            <TextBlock x:Name="bestScoreTextBlock"></TextBlock>
+            <TextBlock x:Name="averageScoreTextBlock"></TextBlock>
+        </StackPanel>
+    </Grid>
+</Window>

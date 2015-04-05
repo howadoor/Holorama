@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Holorama.Logic.Image_Synthesis;
+using Holorama.Logic.Image_Synthesis.Abstract;
+using Ninject;
+
+namespace Holorama.Application.Setup
+{
+    static class NinjectKernelSetup
+    {
+        internal static IKernel CreateKernel()
+        {
+            IKernel kernel = new StandardKernel();
+            SetupKernel(kernel);
+            return kernel;
+        }
+
+        private static void SetupKernel(IKernel kernel)
+        {
+            kernel.Load(Assembly.GetExecutingAssembly());
+            kernel.Bind<SynthesisFactory>().To<SynthesisFactory>().InSingletonScope();
+            kernel.Bind<ISynthesisItemFactory>().To<CircularItemFactory>().WhenInjectedInto<SynthesisFactory>().InSingletonScope();
+        }
+    }
+}

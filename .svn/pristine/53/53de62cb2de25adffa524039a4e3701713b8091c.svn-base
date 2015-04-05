@@ -1,0 +1,99 @@
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Holorama.Application.Setup;
+using Holorama.Application.Tools;
+using Holorama.Logic.Abstract;
+using Holorama.Logic.Concrete.Generators;
+using Holorama.Logic.Image_Synthesis;
+using Ninject;
+using Size = System.Drawing.Size;
+
+namespace Holorama.Application
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        [Inject] public SynthesisOptimizer synthesisOptimizer;
+
+        private double bestScore = 1e12;
+        private bool improved = false;
+
+        public MainWindow(SynthesisOptimizer optimizer)
+        {
+            InitializeComponent();
+            synthesisOptimizer = optimizer;
+            InitalizeSynthesisOptimizer();
+            RegenerateBitmap();
+        }
+
+        private void InitalizeSynthesisOptimizer()
+        {
+            var bitmap = new Bitmap(@"c:\orange-256.jpg");
+            synthesisOptimizer.SourceBitmap = bitmap;
+        }
+
+        private void refreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            RegenerateBitmap();
+        }
+
+        private void RegenerateBitmap()
+        {
+            var bitmap = new BasicExperimentalGenerator().GenerateBitmap(new Size(1920 * 2, 1280 * 2), new RectangleF(10, 10, (float) (19.2) , (float) (12.8)), new GeneratorOptions("Sahara"));
+            bitmap.Save(@"c:\holorama.png", ImageFormat.Png);
+            mainImage.Source = bitmap.ToBitmapSource();
+        }
+
+        private void synthesisButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainImage.Source = synthesisOptimizer.SourceBitmap.ToBitmapSource();
+            Task.Factory.StartNew(RegenerateSynthesis);
+        }
+
+        private void RegenerateSynthesis()
+        {
+            for (int i = 0; i < 1024*1024; i++)
+            {
+                var improvements = synthesisOptimizer.RunOptimization(256);
+                var synthesis = synthesisOptimizer.GetBestSynthesis();
+                var newBestScore = synthesis.Score;
+                var bitmap = synthesisOptimizer.CreateBitmap(synthesis);
+                Dispatcher.Invoke(() =>
+                {
+                    roundTextBlock.Text = i.ToString();
+                    improvementsTextBlock.Text = improvements.ToString();
+                    var filename = string.Format("c:\\{0:D5} synthesis.png", i);
+                    // bitmap.Save(filename, ImageFormat.Png);
+                    mainImage.Source = bitmap.ToBitmapSource();
+                    bestScoreTextBlock.Text = newBestScore.ToString();
+                    averageScoreTextBlock.Text = synthesisOptimizer.AverageScore.ToString();
+                });
+                if (improvements == 0)
+                {
+                    synthesisOptimizer.SwitchGeneration(improved);
+                    improved = false;
+                }
+                if (newBestScore < bestScore)
+                {
+                    bestScore = newBestScore;
+                    improved = true;
+                    // synthesisOptimizer.SwitchGeneration(true);
+                }
+            }
+        }
+    }
+}

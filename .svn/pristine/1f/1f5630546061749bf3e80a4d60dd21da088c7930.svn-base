@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Holorama.Logic.Abstract
+{
+    /// <summary>
+    /// Interface defines methods used for division of space to areas.
+    /// </summary>
+    public interface ISpaceDivisor<in TSpaceDefinition>
+    {
+        /// <summary>
+        /// Divides space defined by <see cref="spaceDefinition"/> to areas using <see cref="options"/>.
+        /// </summary>
+        /// <param name="spaceDefinition">Definition of the space to be divided.</param>
+        /// <param name="options">Options for space division.</param>
+        /// <returns>Space division.</returns>
+        ISpaceDivision Divide(TSpaceDefinition spaceDefinition, SpaceDivisionOptions options);
+    }
+}

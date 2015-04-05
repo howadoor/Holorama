@@ -1,0 +1,12 @@
+using System.Drawing;
+using Perenis.Core.General;
+
+namespace Holorama.Logic.Image_Synthesis.Abstract
+{
+    /// <summary>
+    /// Represents object which creates instances of <see cref="ISynthesisItem"/> based on area defined by instance of <see cref="RectangleF"/>.
+    /// </summary>
+    public interface ISynthesisItemFactory : IFactory<ISynthesisItem, RectangleF>
+    {
+    }
+}

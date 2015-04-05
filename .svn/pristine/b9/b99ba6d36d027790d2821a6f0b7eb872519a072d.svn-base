@@ -1,0 +1,25 @@
+﻿using System.Drawing;
+using Holorama.Logic.Image_Synthesis.Abstract;
+using Holorama.Logic.Tools;
+
+namespace Holorama.Logic.Image_Synthesis
+{
+    /// <summary>
+    /// Instance of <see cref="ISynthesisItemFactory"/> using factory pool to create one of randomly choosen instance of <see cref="ISynthesisItem"/>.
+    /// </summary>
+    public class RandomItemFactory : ISynthesisItemFactory
+    {
+        private ISynthesisItemFactory[] factories;
+
+        public RandomItemFactory(params ISynthesisItemFactory[] factories)
+        {
+            this.factories = factories;
+        }
+
+        public ISynthesisItem Create(RectangleF request)
+        {
+            var i = ColorEx.Random.Next(factories.Length);
+            return factories[i].Create(request);
+        }
+    }
+}

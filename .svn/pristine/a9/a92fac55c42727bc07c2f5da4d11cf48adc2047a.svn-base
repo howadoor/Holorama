@@ -1,0 +1,44 @@
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Holorama.Application.Tools;
+using Holorama.Logic.Abstract;
+using Holorama.Logic.Concrete.Generators;
+using Size = System.Drawing.Size;
+
+namespace Holorama.Application
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+            RegenerateBitmap();
+        }
+
+        private void refreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            RegenerateBitmap();
+        }
+
+        private void RegenerateBitmap()
+        {
+            var bitmap = new BasicExperimentalGenerator().GenerateBitmap(new Size(1920 * 2, 1280 * 2), new RectangleF(10, 10, (float) (19.2) , (float) (12.8)), new GeneratorOptions("Sahara"));
+            bitmap.Save(@"c:\test.png", ImageFormat.Png);
+            mainImage.Source = bitmap.ToBitmapSource();
+        }
+    }
+}

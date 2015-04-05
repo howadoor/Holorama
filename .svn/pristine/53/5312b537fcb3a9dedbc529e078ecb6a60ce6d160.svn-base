@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Holorama.Logic.Image_Synthesis;
+using Holorama.Logic.Image_Synthesis.Abstract;
+using Ninject.Modules;
+
+namespace Holorama.Logic.Setup
+{
+    public class NinjectSetup : NinjectModule
+    {
+        public override void Load()
+        {
+            Bind<SynthesisFactory>().To<SynthesisFactory>().InSingletonScope();
+            Bind<ISynthesisItemFactory>().To<CircularItemFactory>().WhenInjectedInto<RandomItemFactory>().InSingletonScope();
+            Bind<ISynthesisItemFactory>().To<PolygonalItemFactory>().WhenInjectedInto<RandomItemFactory>().InSingletonScope();
+            Bind<ISynthesisItemFactory>().To<RandomItemFactory>().WhenInjectedInto<SynthesisFactory>().InSingletonScope();
+        }
+    }
+}
